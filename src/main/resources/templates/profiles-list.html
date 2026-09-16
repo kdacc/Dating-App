@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Анкети</title>
+</head>
+<body>
+<h1>Список анкет</h1>
+
+<form th:action="@{/profiles/search}" method="get">
+    <input type="text" name="keyword" placeholder="Пошук за ключовим словом">
+    <button type="submit">Знайти</button>
+</form>
+
+<table border="1">
+    <tr>
+        <th>Ім'я</th>
+        <th>Вік</th>
+        <th>Ключові слова</th>
+    </tr>
+    <tr th:each="p : ${profiles}">
+        <td th:text="${p.name}"></td>
+        <td th:text="${p.age}"></td>
+        <td th:text="${p.keywords}"></td>
+    </tr>
+</table>
+</body>
+</html>
