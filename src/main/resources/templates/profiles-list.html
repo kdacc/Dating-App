@@ -1,28 +1,288 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>Анкети</title>
+    <title>Список анкет — Сайт знайомств</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap">
+    <style>
+        :root {
+            --maroon-darkest: #150202;
+            --maroon-dark: #2a0507;
+            --maroon: #4a0810;
+            --maroon-accent: #8c1620;
+            --maroon-light: #b3273a;
+            --gold: #cfa856;
+            --gold-soft: #e3c98a;
+            --text-light: #ece3d6;
+            --text-muted: #b8a99a;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background-color: var(--maroon-darkest);
+            background-image:
+                    radial-gradient(circle at 1px 1px, rgba(207, 168, 86, 0.09) 1px, transparent 0),
+                    repeating-linear-gradient(135deg, rgba(207, 168, 86, 0.035) 0px, rgba(207, 168, 86, 0.035) 1px, transparent 1px, transparent 26px),
+                    radial-gradient(ellipse 900px 520px at 50% -8%, rgba(140, 22, 32, 0.4), transparent 62%),
+                    linear-gradient(180deg, var(--maroon-darkest) 0%, #0d0101 100%);
+            background-size: 26px 26px, auto, auto, auto;
+            background-repeat: repeat, repeat, no-repeat, no-repeat;
+            color: var(--text-light);
+            font-family: "Manrope", "Segoe UI", sans-serif;
+            min-height: 100vh;
+            padding-bottom: 4rem;
+        }
+
+        .container {
+            max-width: 980px;
+        }
+
+        .page-header {
+            margin-bottom: 0.35rem;
+        }
+
+        h2 {
+            font-family: "Cormorant Garamond", "Georgia", serif;
+            color: var(--gold-soft);
+            font-weight: 700;
+            font-size: 2.4rem;
+            letter-spacing: 0.5px;
+            margin: 0;
+        }
+
+        .page-subtitle {
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin: 0 0 2rem 0;
+        }
+
+        /*панель пошуку*/
+        .search-panel {
+            background: linear-gradient(160deg, rgba(74, 8, 16, 0.55), rgba(0, 0, 0, 0.4));
+            border: 1px solid rgba(207, 168, 86, 0.25);
+            border-radius: 14px;
+            padding: 1.4rem 1.6rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+        }
+
+        .search-form {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.9rem;
+        }
+
+        .search-form .search-field {
+            flex: 1 1 260px;
+        }
+
+        .search-form .form-control {
+            background-color: rgba(21, 2, 2, 0.7);
+            border: 1px solid rgba(207, 168, 86, 0.3);
+            color: var(--text-light);
+            height: 46px;
+            border-radius: 8px;
+            padding-left: 1rem;
+        }
+
+        .search-form .form-control::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-form .form-control:focus {
+            background-color: rgba(21, 2, 2, 0.9);
+            color: var(--text-light);
+            border-color: var(--gold);
+            box-shadow: 0 0 0 0.18rem rgba(207, 168, 86, 0.2);
+        }
+
+        .search-form .search-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            height: 46px;
+        }
+
+        .btn-maroon,
+        .btn-outline-gold {
+            height: 46px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 1.4rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.92rem;
+            letter-spacing: 0.3px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .btn-maroon {
+            background: linear-gradient(180deg, var(--maroon-accent), var(--maroon));
+            border: 1px solid var(--maroon-light);
+            color: var(--text-light);
+        }
+
+        .btn-maroon:hover {
+            background: linear-gradient(180deg, var(--maroon-light), var(--maroon-accent));
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline-gold {
+            background-color: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold-soft);
+        }
+
+        .btn-outline-gold:hover {
+            background-color: var(--gold);
+            color: var(--maroon-darkest);
+            transform: translateY(-1px);
+        }
+
+        /*порожній стан*/
+        .alert-maroon {
+            background: rgba(140, 22, 32, 0.18);
+            border: 1px solid rgba(207, 168, 86, 0.25);
+            border-radius: 12px;
+            color: var(--text-light);
+            padding: 1.1rem 1.4rem;
+        }
+
+        /*таблиця*/
+        .table-wrapper {
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid rgba(207, 168, 86, 0.2);
+            box-shadow: 0 14px 34px rgba(0, 0, 0, 0.5);
+        }
+
+        table.table-maroon {
+            --bs-table-bg: #1c0505;
+            --bs-table-color: var(--text-light);
+            --bs-table-border-color: rgba(207, 168, 86, 0.16);
+            --bs-table-striped-bg: #240707;
+            --bs-table-striped-color: var(--text-light);
+            --bs-table-hover-bg: #3a0b10;
+            --bs-table-hover-color: #ffffff;
+            margin-bottom: 0;
+            border-collapse: separate;
+        }
+
+        table.table-maroon thead tr {
+            --bs-table-bg: #050000;
+            --bs-table-color: var(--gold-soft);
+        }
+
+        table.table-maroon thead th {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            border-bottom: 2px solid var(--maroon-accent);
+            padding: 0.95rem 1rem;
+        }
+
+        table.table-maroon td,
+        table.table-maroon th {
+            vertical-align: middle;
+            padding: 0.85rem 1rem;
+        }
+
+        table.table-maroon tbody tr {
+            transition: background-color 0.15s ease;
+        }
+
+        .badge {
+            font-weight: 700;
+            font-size: 0.75rem;
+            letter-spacing: 0.3px;
+            padding: 0.4em 0.8em;
+            border-radius: 20px;
+        }
+
+        .badge-youth {
+            background-color: #5c7089;
+            color: #ffffff;
+        }
+
+        .badge-young {
+            background-color: var(--gold);
+            color: #221000;
+        }
+
+        .badge-adult {
+            background-color: var(--maroon-light);
+            color: #ffffff;
+        }
+    </style>
 </head>
 <body>
-<h1>Список анкет</h1>
+<div class="container mt-5">
+    <div class="page-header">
+        <h2>Список анкет користувачів</h2>
+    </div>
+    <p class="page-subtitle">Сайт знайомств &middot; Каталог анкет</p>
 
-<form th:action="@{/profiles/search}" method="get">
-    <input type="text" name="keyword" placeholder="Пошук за ключовим словом">
-    <button type="submit">Знайти</button>
-</form>
+    <!--форма пошуку-->
+    <div class="search-panel">
+        <form th:action="@{/profiles/search}" method="get" class="search-form">
+            <div class="search-field">
+                <label for="keywordInput" class="visually-hidden">Пошук за ключовим словом</label>
+                <input type="text" id="keywordInput" name="keyword" class="form-control"
+                       placeholder="Пошук за ключовим словом"
+                       th:value="${param.keyword}"
+                       aria-label="Пошук за ключовим словом">
+            </div>
+            <div class="search-actions">
+                <button type="submit" class="btn btn-maroon">Знайти</button>
+                <a th:href="@{/profiles}" class="btn btn-outline-gold">Скинути</a>
+            </div>
+        </form>
+    </div>
 
-<table border="1">
-    <tr>
-        <th>Ім'я</th>
-        <th>Вік</th>
-        <th>Ключові слова</th>
-    </tr>
-    <tr th:each="p : ${profiles}">
-        <td th:text="${p.name}"></td>
-        <td th:text="${p.age}"></td>
-        <td th:text="${p.keywords}"></td>
-    </tr>
-</table>
+    <div th:if="${#lists.isEmpty(profiles)}" class="alert alert-maroon" role="alert">
+        Анкет за вашим запитом не знайдено.
+    </div>
+
+    <div th:unless="${#lists.isEmpty(profiles)}" class="table-wrapper">
+        <table class="table table-bordered table-maroon align-middle mb-0">
+            <thead>
+            <tr>
+                <th scope="col">Ім'я</th>
+                <th scope="col" class="text-center">Вік</th>
+                <th scope="col" class="text-center">Вікова категорія</th>
+                <th scope="col">Ключові слова</th>
+                <th scope="col">Закрита інформація</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="profile : ${profiles}">
+                <td th:text="${profile.name}">Ім'я</td>
+
+                <td th:text="${profile.age ?: 'Не вказано'}" class="text-center">25</td>
+
+                <td th:switch="${true}" class="text-center">
+                    <span th:case="${profile.age < 20}" class="badge badge-youth">Юнацтво</span>
+                    <span th:case="${profile.age >= 20 and profile.age < 30}" class="badge badge-young">Молодь</span>
+                    <span th:case="*" class="badge badge-adult">Дорослі</span>
+                </td>
+
+                <td th:text="${#strings.arrayJoin(profile.keywords, ', ')}">[подорожі, книги]</td>
+
+                <td th:text="${profile.closedInfo}">Закрита інформація</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 </body>
 </html>

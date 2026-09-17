@@ -13,7 +13,7 @@ public class ProfileRepositoryFake implements ProfileRepository {
     private final List<Profile> profiles = new ArrayList<>(List.of(
             new Profile(1L, "Олена", 25, List.of("подорожі", "книги"),
                     "Любить читати", "Шукає серйозні стосунки"),
-            new Profile(2L, "Ігор", 28, List.of("спорт", "музика"),
+            new Profile(2L, "Ігор", 48, List.of("спорт", "музика"),
                     "Займається бігом", "Відкритий до знайомств")
     ));
 
