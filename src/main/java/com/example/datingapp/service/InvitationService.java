@@ -6,7 +6,14 @@ import com.example.datingapp.repository.ProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.util.List;
+import java.util.Optional;
+
 
 @Service
 public class InvitationService {
@@ -34,5 +41,19 @@ public class InvitationService {
     public void sendInvitation(Invitation invitation) {
         invitationRepository.save(invitation);
         notificationHelper.notify("Нове запрошення від " + invitation.getFromUserId());
+    }
+
+    public Optional<Invitation> patchInvitation(Long id, JsonPatch patch) {
+        return invitationRepository.findById(id).map(invitation -> {
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode patched = patch.apply(mapper.convertValue(invitation, JsonNode.class));
+                Invitation updated = mapper.treeToValue(patched, Invitation.class);
+                invitationRepository.save(updated);
+                return updated;
+            } catch (JsonPatchException | com.fasterxml.jackson.core.JsonProcessingException e) {
+                throw new RuntimeException("Не вдалося застосувати patch", e);
+            }
+        });
     }
 }

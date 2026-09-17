@@ -9,4 +9,6 @@ public interface ProfileRepository {
     List<Profile> findAll();
     Optional<Profile> findById(Long id);
     List<Profile> findByKeyword(String keyword);
+    Profile save(Profile profile);
+    void deleteById(Long id);
 }

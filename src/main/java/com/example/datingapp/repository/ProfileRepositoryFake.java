@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 public class ProfileRepositoryFake implements ProfileRepository {
@@ -16,6 +17,8 @@ public class ProfileRepositoryFake implements ProfileRepository {
             new Profile(2L, "Ігор", 48, List.of("спорт", "музика"),
                     "Займається бігом", "Відкритий до знайомств")
     ));
+
+    private final AtomicLong idCounter = new AtomicLong(3);
 
     @Override
     public List<Profile> findAll() {
@@ -34,5 +37,22 @@ public class ProfileRepositoryFake implements ProfileRepository {
         return profiles.stream()
                 .filter(p -> p.getKeywords().contains(keyword))
                 .toList();
+    }
+
+    @Override
+    public Profile save(Profile profile) {
+        if (profile.getId() == null) {
+            profile.setId(idCounter.getAndIncrement());
+            profiles.add(profile);
+        } else {
+            profiles.removeIf(p -> p.getId().equals(profile.getId()));
+            profiles.add(profile);
+        }
+        return profile;
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        profiles.removeIf(p -> p.getId().equals(id));
     }
 }
