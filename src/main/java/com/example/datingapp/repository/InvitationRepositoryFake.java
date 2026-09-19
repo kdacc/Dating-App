@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-@Repository
+//@Repository
 public class InvitationRepositoryFake implements InvitationRepository {
 
     private final List<Invitation> invitations = new ArrayList<>(List.of(

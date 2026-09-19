@@ -5,14 +5,14 @@ import java.util.List;
 public class Profile {
     private Long id;
     private String name;
-    private int age;
+    private Integer age;
     private List<String> keywords;
     private String openInfo;
     private String closedInfo;
 
     public Profile() {}
 
-    public Profile(Long id, String name, int age, List<String> keywords,
+    public Profile(Long id, String name, Integer age, List<String> keywords,
                    String openInfo, String closedInfo) {
         this.id = id;
         this.name = name;
@@ -28,8 +28,8 @@ public class Profile {
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    public int getAge() { return age; }
-    public void setAge(int age) { this.age = age; }
+    public Integer getAge() { return age; }
+    public void setAge(Integer age) { this.age = age; }
 
     public List<String> getKeywords() { return keywords; }
     public void setKeywords(List<String> keywords) { this.keywords = keywords; }

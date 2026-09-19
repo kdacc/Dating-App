@@ -4,6 +4,7 @@ import com.example.datingapp.model.Invitation;
 import com.example.datingapp.service.InvitationService;
 import com.github.fge.jsonpatch.JsonPatch;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.MediaType;
@@ -44,5 +45,27 @@ public class InvitationRestController {
         return invitationService.patchInvitation(id, patch)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/{id}/accept")
+    @Operation(
+            summary = "Прийняти запрошення",
+            description = "Змінює статус запрошення на ACCEPTED та одночасно оновлює закриту інформацію в профілі отримувача (Транзакційна операція)."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Запрошення успішно прийнято"),
+            @ApiResponse(responseCode = "500", description = "Внутрішня помилка сервера (відкат транзакції)")
+    })
+    public ResponseEntity<String> acceptInvitation(
+            @Parameter(description = "Ідентифікатор запрошення") @PathVariable Long id,
+            @Parameter(description = "Прапорець для симуляції помилки (щоб перевірити rollback)") @RequestParam(defaultValue = "false") boolean simulateError) {
+
+        try {
+            invitationService.acceptInvitation(id, simulateError);
+            return ResponseEntity.ok("Запрошення успішно прийнято.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body("Помилка обробки: " + e.getMessage());
+        }
     }
 }

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
-@Repository
+//@Repository
 public class ProfileRepositoryFake implements ProfileRepository {
 
     private final List<Profile> profiles = new ArrayList<>(List.of(
