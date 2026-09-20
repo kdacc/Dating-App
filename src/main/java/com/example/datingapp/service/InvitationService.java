@@ -13,6 +13,7 @@ import com.github.fge.jsonpatch.JsonPatchException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,7 +37,9 @@ public class InvitationService {
     }
 
     public List<Invitation> getAllInvitations() {
-        return invitationRepository.findAll();
+        List<Invitation> invitations = new ArrayList<>();
+        invitationRepository.findAll().forEach(invitations::add);
+        return invitations;
     }
 
     public void sendInvitation(Invitation invitation) {
@@ -70,11 +73,14 @@ public class InvitationService {
             throw new RuntimeException("Штучна помилка! Транзакція має відкотитися.");
         }
 
-        Profile receiver = profileRepository.findById(invitation.getReceiverId())
-                .orElseThrow(() -> new RuntimeException("Профіль отримувача не знайдено"));
+        Profile receiver = invitation.getReceiver();
+        if (receiver == null) {
+            throw new RuntimeException("Профіль отримувача не знайдено");
+        }
 
         String currentClosedInfo = receiver.getClosedInfo() == null ? "" : receiver.getClosedInfo();
-        receiver.setClosedInfo(currentClosedInfo + " | Має новий підтверджений зв'язок");
+        receiver.setClosedInfo(currentClosedInfo + " | Має новий підтверджений зв'язок (через JPA)");
+
         profileRepository.save(receiver);
     }
 }

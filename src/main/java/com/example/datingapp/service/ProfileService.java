@@ -5,6 +5,7 @@ import com.example.datingapp.repository.ProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -20,11 +21,13 @@ public class ProfileService {
     }
 
     public List<Profile> getAllProfiles() {
-        return profileRepository.findAll();
+        List<Profile> profiles = new ArrayList<>();
+        profileRepository.findAll().forEach(profiles::add);
+        return profiles;
     }
 
     public List<Profile> searchByKeyword(String keyword) {
-        return profileRepository.findByKeyword(keyword);
+        return profileRepository.findByKeywordNamed(keyword);
     }
 
     public Optional<Profile> getProfileById(Long id) {
@@ -38,8 +41,12 @@ public class ProfileService {
 
     public Optional<Profile> updateProfile(Long id, Profile updated) {
         return profileRepository.findById(id).map(existing -> {
-            updated.setId(id);
-            return profileRepository.save(updated);
+            existing.setName(updated.getName());
+            existing.setAge(updated.getAge());
+            existing.setKeywords(updated.getKeywords());
+            existing.setOpenInfo(updated.getOpenInfo());
+            existing.setClosedInfo(updated.getClosedInfo());
+            return profileRepository.save(existing);
         });
     }
 
@@ -66,7 +73,10 @@ public class ProfileService {
     }
 
     public List<Profile> getProfilesFiltered(String keyword, Integer minAge, Integer maxAge, int page, int size) {
-        List<Profile> filtered = profileRepository.findAll().stream()
+        List<Profile> allProfiles = new ArrayList<>();
+        profileRepository.findAll().forEach(allProfiles::add);
+
+        List<Profile> filtered = allProfiles.stream()
                 .filter(p -> keyword == null || p.getKeywords().contains(keyword))
                 .filter(p -> minAge == null || p.getAge() >= minAge)
                 .filter(p -> maxAge == null || p.getAge() <= maxAge)
